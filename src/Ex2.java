@@ -1,67 +1,77 @@
+import java.util.ArrayList;
+
 public class Ex2 {
 
-
-
-        public static boolean IsNumber(String Text) {
-            boolean Ans = true;
-
-            try {
-                double result = Double.parseDouble(Text);
-            }
-            catch (NumberFormatException e) {
-                Ans = false;
-            }
+    public static boolean IsNumber(String Text) {
+        boolean Ans = true;
+        if (Text == null) {
+            Ans = false;
             return Ans;
         }
 
-        public static boolean IsText(String Text) {
-        boolean Ans = true;
-            if (!IsNumber(Text) && !IsForm(Text)) {
-        Ans= false;
-            }
-        return Ans;
+        try {
+            Double.parseDouble(Text);
+        } catch (NumberFormatException e) {
+            Ans = false;
         }
+        return Ans;
+    }
+
+    public static boolean IsText(String Text) {
+        boolean Ans = IsNumber(Text) || IsForm(Text);
+        return Ans;
+    }
 
     public static boolean IsForm(String Text) {
-           boolean Ans= false;
+        boolean Ans = false;
 
-        //Check null
-        if (Text==null) {
+        // Check for null
+        if (Text == null) {
             return Ans;
         }
 
-        //Check if Starts with =
-            if (Text.charAt(0) != '=') {
-                Ans = false;
-                return Ans;
-            }
-            //remove "="
-            Text = Text.substring(1);
-
-            //check if "(" is ")" same value
-            int OpenCounter = 0;
-            int CloseCounter = 0;
-
-            for (int i=0; i < Text.length(); i++) {
-                char ch = Text.charAt(i);
-                if (ch == '(') {
-                    OpenCounter++;
-                }
-                else if (ch == ')') {
-                    CloseCounter++;
-                }
-            }
-            if (OpenCounter != CloseCounter) {
-                Ans=false;
-                return Ans;
+        // Check for empty
+        if (Text.isEmpty()) {
+            return Ans;
         }
 
-            //check if parentheses are aligned
-          int balance = 0;
+        // Check if starts with "="
+        if (Text.charAt(0) != '=') {
+            Ans = false;
+            return Ans;
+        }
+
+        // check for consecutive operators
+        String regex = "[\\+\\-\\*/]{2}";
+        if (Text.matches(".*" + regex + ".*")) {
+            Ans = false;
+            return Ans;
+        }
+
+        // Remove "="
+        Text = Text.substring(1);
+
+        // Check if "(" and ")" have the same number
+        int OpenCounter = 0;
+        int CloseCounter = 0;
 
         for (int i = 0; i < Text.length(); i++) {
-            char c = Text.charAt(i);
+            char ch = Text.charAt(i);
+            if (ch == '(') {
+                OpenCounter++;
+            } else if (ch == ')') {
+                CloseCounter++;
+            }
+        }
+        if (OpenCounter != CloseCounter) {
+            Ans = false;
+            return Ans;
+        }
 
+        // Check if parentheses are aligned
+        int balance = 0;
+        for (int i = 0; i < Text.length(); i++) {
+            char c = Text.charAt(i);
             if (c == '(') {
                 balance++;
             } else if (c == ')') {
@@ -71,68 +81,154 @@ public class Ex2 {
                 return false;
             }
         }
-            // If balance is wrong, missing opening/closing parentheses
-            if (balance != 0) {
-                Ans = false;
-                return Ans;
-            }
+        if (balance != 0) {
+            Ans = false;
+            return Ans;
+        }
 
-
-            //now the real fun begins...
-
-            //REMOVE ALL PARENTHESES!
+        // Remove parentheses
         Text = Text.replaceAll("\\(", "");
         Text = Text.replaceAll("\\)", "");
 
+        //check if empty
+        if (Text.isEmpty()) {
+            Ans = false;
+            return Ans;
+        }
+
+        // Check if the first character is an operator
+        if ((Text.charAt(0) == '+') || (Text.charAt(0) == '*') || (Text.charAt(0) == '/')) {
+            Ans = false;
+            return Ans;
+        }
+
+        boolean isNegative = Text.charAt(0) == '-';
+
         String operators = "+-*/";
-
-        //Split the formula and check each part
         StringBuilder currentNum = new StringBuilder();
-        boolean isNegative = false; // Flag for negative sign
 
-
-        for (int i =0; i < Text.length(); i++) {
+        for (int i = 0; i < Text.length(); i++) {
             char ch = Text.charAt(i);
 
-            //if ch is operator check the String before it
+            // If ch is an operator, check the number before it
             if (operators.indexOf(ch) != -1) {
-                if (!IsNumber(currentNum.toString())) {
-                    Ans = false;
+                // If there's a current number, check if it's valid
+                if (!currentNum.isEmpty() && !IsNumber(currentNum.toString())) {
+                    Ans = false;  // Invalid number found
                     return Ans;
                 }
-                //Reset Number! collect chars again
+
+                // Reset current number and negative flag
                 currentNum.setLength(0);
                 isNegative = false; // Reset the negative flag
-
             } else {
-
                 // Check for a negative sign before a number
                 if (ch == '-' && (i == 0 || operators.indexOf(Text.charAt(i - 1)) != -1)) {
                     isNegative = true;
-                    continue; // Skip this character, as it is part of the next number
+                    currentNum.append(ch); // Add the negative sign to the number
+                    continue; // Skip this character, as it's part of the next number
                 }
 
-                //Build the number string
+                // Add character to the current number
                 currentNum.append(ch);
             }
         }
 
-        //After loop a last number remains to check
-        if (IsNumber(currentNum.toString())) {
-            Ans=true;
+        // After the loop, check the last part of the number
+        Ans = currentNum.length() < 0 || IsNumber(currentNum.toString());
+
+        return Ans;
+    }
+
+    public static int findLastOperator(String Form) {
+        int Ans = -1;
+
+        //check if any operators exist
+        if (!(Form.contains("+") || Form.contains("*") || Form.contains("-") || Form.contains("/"))) {
             return Ans;
         }
 
 
+        // Remove "="
+        if (Form.charAt(0) == '=') {
+            Form = Form.substring(1);
+        }
+        double ParantCounter = 0;
+        double smallValue = 0.25;
+        double largeValue = 0.5;
+        ArrayList<Integer> indexes = new ArrayList<>();
+        ArrayList<Double> values = new ArrayList<>();
 
 
+        for (int i = 0; i < Form.length(); i++) {
+            char currentChar = Form.charAt(i);
+
+            // Check for opening parenthesis
+            if (currentChar == '(') {
+                ParantCounter++;
+            }
+            // Check for closing parenthesis
+            else if (currentChar == ')') {
+                ParantCounter--;
+            }
+
+            // Check for operators (+, -, *, /)
+            else if (currentChar == '+' || currentChar == '-' || currentChar == '*' || currentChar == '/') {
+                // Add the current index to the indices ArrayList
+                indexes.add(i);
+
+                // Calculate the value to be added to the values ArrayList
+                double value;
+                if (currentChar == '+' || currentChar == '-') {
+                    value = ParantCounter + smallValue;
+                } else {
+                    value = ParantCounter + largeValue;
+                }
+
+                // Add the calculated value to the values ArrayList
+                values.add(value);
+
+
+            }
+        }
+
+        // FIND INDEX OF SMALLEST VALUE:
+
+        // Initialize the index of the smallest value
+        int smallestIndex = -1;
+
+        // Initialize a variable to track the smallest value (start with a very large number)
+        double smallestValue = Double.MAX_VALUE;
+
+        // Loop through the values ArrayList
+        int i = 0;
+        int j = 0;
+        for (i = 0; i < values.size(); i++) {
+            double currentValue = values.get(i);
+
+            // If a smaller value is found, or it's equal but later, update the smallest
+            if (currentValue <= smallestValue) {
+                smallestValue = currentValue;
+                smallestIndex = i;
+                j = i;
+            }
+    }
+
+        Ans = indexes.get(j);
         return Ans;
     }
 
 
 
+    public static Double computeForm(String form) {
+        double Result = -1.0;
+        if (!IsForm(form)){
+            return Result;
+        }
 
 
+        return Result;
+    }
 
 
     }
