@@ -36,18 +36,20 @@ public class Ex2Tests {
     // -------------------- Test IsText method --------------------
     @Test
     public void testIsText_ValidText() {
-        assertTrue(Ex2.IsText("123"));
-        assertTrue(Ex2.IsText("-123.45"));
-        assertTrue(Ex2.IsText("=2*3-4/5"));
-        assertTrue(Ex2.IsText("=-1+(2*3)"));
+        assertFalse(Ex2.IsText("123"));
+        assertFalse(Ex2.IsText("-123.45"));
+        assertTrue(Ex2.IsText("2*3-4/5"));
+        assertTrue(Ex2.IsText("-1+(2*3)"));
     }
 
     @Test
     public void testIsText_InvalidText() {
-        assertFalse(Ex2.IsText("abc"));
-        assertFalse(Ex2.IsText("123abc"));
-        assertFalse(Ex2.IsText("++123"));
-        assertFalse(Ex2.IsText("123--"));
+        assertFalse(Ex2.IsText("=2*3-4/5"));
+        assertFalse(Ex2.IsText("=-1+(2*3)"));
+        assertTrue(Ex2.IsText("abc"));
+        assertTrue(Ex2.IsText("123abc"));
+        assertTrue(Ex2.IsText("++123"));
+        assertTrue(Ex2.IsText("123--"));
         assertFalse(Ex2.IsText("=++123"));
         assertFalse(Ex2.IsText("=123++"));
     }
@@ -118,6 +120,8 @@ public class Ex2Tests {
         assertFalse(Ex2.IsForm("=3+5!2"));
         assertFalse(Ex2.IsForm("=3+5.5.5"));
         assertFalse(Ex2.IsForm("=3+5.5*2+5..5"));
+        assertFalse(Ex2.IsForm("5"));
+
     }
 
     @Test

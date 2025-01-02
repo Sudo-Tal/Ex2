@@ -18,7 +18,10 @@ public class Ex2 {
     }
 
     public static boolean IsText(String Text) {
-        boolean Ans = IsNumber(Text) || IsForm(Text);
+        if (Text.charAt(0) == '=') {
+            return false;
+        }
+        boolean Ans = !IsNumber(Text) && !IsForm(Text);
         return Ans;
     }
 
@@ -212,23 +215,30 @@ public class Ex2 {
                 smallestIndex = i;
                 j = i;
             }
-    }
+        }
 
         Ans = indexes.get(j);
         return Ans;
     }
 
 
-
     public static Double computeForm(String form) {
-        double Result = -1.0;
-        if (!IsForm(form)){
-            return Result;
+        if (!IsForm(form)) {
+            return -1.0;
         }
 
+            // Stopping point: if the formula is just a number, parse and return it
+            if (IsNumber(form)) {
+                return Double.parseDouble(form);
+            }
 
-        return Result;
+            // Find the last operator in the formula
+            int operatorIndex = (int) findLastOperator(form);
+
+
+
+            return 1.0;
     }
 
 
-    }
+}
