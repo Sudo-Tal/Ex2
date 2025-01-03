@@ -126,7 +126,7 @@ public class Ex2 {
                 isNegative = false; // Reset the negative flag
             } else {
                 // Check for a negative sign before a number
-                if (ch == '-' && (i == 0 || operators.indexOf(Text.charAt(i - 1)) != -1)) {
+                if (ch == '-' && (currentNum.charAt(0) == '-' || operators.indexOf(Text.charAt(i - 1)) != -1)) {
                     isNegative = true;
                     currentNum.append(ch); // Add the negative sign to the number
                     continue; // Skip this character, as it's part of the next number
@@ -249,7 +249,10 @@ public class Ex2 {
         //check if expression is parentheses
         if (form.charAt(0) == '(' && form.charAt(form.length() - 1) == ')') {
             // Remove the first and last characters (parentheses)
+            //check if result is valid
+            if (IsForm('='+form.substring(1, form.length() - 1))){
             form = form.substring(1, form.length() - 1);
+            }
         }
 
         // Stopping point: if the formula is just a number, parse and return it

@@ -292,6 +292,11 @@ public class Ex2Tests {
                     String formula14 = "=3.5+2.5";
                     double result14 = Ex2.computeForm(formula14);
                     assertEquals(6.0, result14, "Expected result for 3.5+2.5 is 6");
+
+                    // Test case 15: Super Complex Formula
+                    String formula15 = "=(3*(5+(2*(7-(8*(4+(6-3)))))))-(4*(2+(6-3)))+(8*((9-5)*(4+(2*3))))";
+                    double result15 = Ex2.computeForm(formula15);
+                    assertEquals(21.0, result15);
                 }
             }
 
