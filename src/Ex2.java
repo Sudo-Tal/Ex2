@@ -143,6 +143,20 @@ public class Ex2 {
         return Ans;
     }
 
+    // Helper method to perform the operation based on the operator
+    private static double performOperation(double left, double right, char operator) {
+        return switch (operator) {
+            case '+' -> left + right;
+            case '-' -> left - right;
+            case '*' -> left * right;
+            case '/' -> {
+                if (right == 0) throw new ArithmeticException("Division by zero");
+                yield left / right;
+            }
+            default -> throw new IllegalArgumentException("Unsupported operator: " + operator);
+        };
+    }
+
     public static int findLastOperator(String Form) {
         int Ans = -1;
 
@@ -227,17 +241,41 @@ public class Ex2 {
             return -1.0;
         }
 
-            // Stopping point: if the formula is just a number, parse and return it
-            if (IsNumber(form)) {
-                return Double.parseDouble(form);
-            }
+        // Check if starts with "="
+        if (form.charAt(0) == '=') {
+            form = form.substring(1);
+        }
 
-            // Find the last operator in the formula
-            int operatorIndex = (int) findLastOperator(form);
+        //check if expression is parentheses
+        if (form.charAt(0) == '(' && form.charAt(form.length() - 1) == ')') {
+            // Remove the first and last characters (parentheses)
+            form = form.substring(1, form.length() - 1);
+        }
 
+        // Stopping point: if the formula is just a number, parse and return it
+        if (IsNumber(form)) {
+            return Double.parseDouble(form);
+        }
 
+        // Find the last operator in the formula
+        int operatorIndex = findLastOperator(form);
 
-            return 1.0;
+        //split formula
+        String leftFormula = form.substring(0, operatorIndex);
+        String rightFormula = form.substring(operatorIndex + 1);
+
+        //append "="
+        leftFormula = '=' + leftFormula;
+        rightFormula = '=' + rightFormula;
+
+        // Recursively calculate the left and right formulas
+        double leftValue = computeForm(leftFormula);
+        double rightValue = computeForm(rightFormula);
+
+        char operator = form.charAt(operatorIndex);
+        // Calculate the result of this operator
+        double result = performOperation(leftValue, rightValue, operator);
+        return result;
     }
 
 
