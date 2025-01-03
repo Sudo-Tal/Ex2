@@ -1,4 +1,3 @@
-package assignments.ex2;
 
 /**
  * This class contains a set of constants for Ex2 (I2CS, ArielU 2025A),

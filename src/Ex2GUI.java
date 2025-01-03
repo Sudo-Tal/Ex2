@@ -1,4 +1,3 @@
-package assignments.ex2;
 
 import java.awt.*;
 import java.io.IOException;
@@ -28,7 +27,7 @@ public class Ex2GUI {
 	}
 
 	/**
-	 * This function runs the main (endlees) loop of the GUI
+	 * This function runs the main (endless) loop of the GUI
 	 * @param table the SpreadSheet - note: this class is written as a naive implementation of "singleton" (i.e., all static).
 	 */
 	public static void testSimpleGUI(Sheet table) {
