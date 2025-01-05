@@ -123,6 +123,9 @@ public class Tests {
         assertFalse(SCell.IsForm("=3+5.5.5"));
         assertFalse(SCell.IsForm("=3+5.5*2+5..5"));
         assertFalse(SCell.IsForm("5"));
+        assertFalse(SCell.IsForm("=(3+3)3"));
+        assertFalse(SCell.IsForm("=3(3=3)"));
+
 
     }
 

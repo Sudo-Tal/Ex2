@@ -82,10 +82,48 @@ public class Ex2Sheet implements Sheet {
 
     @Override
     public int[][] depth() {
-        int[][] ans = new int[width()][height()];
-        // Add your code here
 
-        // //////////////////
+        int[][] ans = new int[width()][height()];
+
+        int[][] depths = new int[width()][height()];
+        // Initialize depths array
+            for (int i = 0; i < width(); i++) {
+                for (int j = 0; j < height(); j++) {
+                    depths[i][j] = -1;  // Set initial depth to -1 (not calculated)
+               }
+            }
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         return ans;
     }
 

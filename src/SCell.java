@@ -4,6 +4,7 @@ import java.util.ArrayList;
 public class SCell implements Cell {
     private String line;
     private int type;
+    private int order;
     String OriginalLine = null;
     // Add your code here
 
@@ -124,6 +125,18 @@ public void setData(String s) {
         if (Text.matches(".*" + regex + ".*")) {
             Ans = false;
             return Ans;
+        }
+
+        //check if numbers are adjacent to parentheses
+        for (int i = 0; i < Text.length(); i++) {
+            char curr = Text.charAt(i);
+
+            if (Character.isDigit(curr)) {
+                // Check if number is directly adjacent to '(' or ')'
+                if ((i > 0 && Text.charAt(i - 1) == ')') || (i < Text.length() - 1 && Text.charAt(i + 1) == '(')) {
+                    return false;  // Invalid: number adjacent to '(' or ')'
+                }
+            }
         }
 
         // Remove "="
