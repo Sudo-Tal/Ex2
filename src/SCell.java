@@ -4,10 +4,27 @@ import java.util.ArrayList;
 public class SCell implements Cell {
     private String line;
     private int type;
+    String OriginalLine = null;
     // Add your code here
 
     public SCell(String s) {
-        // Add your code here
+        OriginalLine = s;
+
+        //set type
+        //order is important
+        if (!IsForm(s)) {
+            type =-2;
+        }
+        if (IsText(s)) {
+            type =1;
+        }
+        if (IsNumber(s)) {
+            type =2;
+        }
+        if (IsForm(s)) {
+            type =3;
+        }
+
         setData(s);
     }
 
@@ -56,9 +73,11 @@ public void setData(String s) {
     //PreCode
     public static boolean IsNumber(String Text) {
         boolean Ans = true;
-        if (Text == null) {
-            Ans = false;
-            return Ans;
+        if (Text == null || Text.isEmpty()) {
+            return false;  // Return false if the string is empty or null
+        }
+        if (Text.charAt(0) == '=') {
+            return false;
         }
 
         try {
@@ -70,9 +89,13 @@ public void setData(String s) {
     }
 
     public static boolean IsText(String Text) {
+        if (Text == null || Text.isEmpty()) {
+            return false;  // Return false if the string is empty or null
+        }
         if (Text.charAt(0) == '=') {
             return false;
         }
+
         boolean Ans = !IsNumber(Text) && !IsForm(Text);
         return Ans;
     }

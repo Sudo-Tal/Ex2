@@ -72,9 +72,11 @@ public class Ex2Sheet implements Sheet {
     @Override
     public boolean isIn(int xx, int yy) {
         boolean ans = xx>=0 && yy>=0;
-        // Add your code here
-
-        /////////////////////
+        boolean InBoundary = xx >= 0 && xx <= width() && yy >= 0 && yy <= height();
+        if (!InBoundary) {
+            ans =false;
+            return ans;
+        }
         return ans;
     }
 
@@ -83,7 +85,7 @@ public class Ex2Sheet implements Sheet {
         int[][] ans = new int[width()][height()];
         // Add your code here
 
-        // ///////////////////
+        // //////////////////
         return ans;
     }
 

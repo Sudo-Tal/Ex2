@@ -44,6 +44,33 @@ public class CellEntry implements Index2D {
             if (cellString.charAt(0) == 'X') return 23;
             if (cellString.charAt(0) == 'Y') return 24;
             if (cellString.charAt(0) == 'Z') return 25;
+
+            if (cellString.charAt(0) == 'a') return 0;
+            if (cellString.charAt(0) == 'b') return 1;
+            if (cellString.charAt(0) == 'c') return 2;
+            if (cellString.charAt(0) == 'd') return 3;
+            if (cellString.charAt(0) == 'e') return 4;
+            if (cellString.charAt(0) == 'f') return 5;
+            if (cellString.charAt(0) == 'g') return 6;
+            if (cellString.charAt(0) == 'h') return 7;
+            if (cellString.charAt(0) == 'i') return 8;
+            if (cellString.charAt(0) == 'j') return 9;
+            if (cellString.charAt(0) == 'k') return 10;
+            if (cellString.charAt(0) == 'l') return 11;
+            if (cellString.charAt(0) == 'm') return 12;
+            if (cellString.charAt(0) == 'n') return 13;
+            if (cellString.charAt(0) == 'o') return 14;
+            if (cellString.charAt(0) == 'p') return 15;
+            if (cellString.charAt(0) == 'q') return 16;
+            if (cellString.charAt(0) == 'r') return 17;
+            if (cellString.charAt(0) == 's') return 18;
+            if (cellString.charAt(0) == 't') return 19;
+            if (cellString.charAt(0) == 'u') return 20;
+            if (cellString.charAt(0) == 'v') return 21;
+            if (cellString.charAt(0) == 'w') return 22;
+            if (cellString.charAt(0) == 'x') return 23;
+            if (cellString.charAt(0) == 'y') return 24;
+            if (cellString.charAt(0) == 'z') return 25;
         }
         return Ex2Utils.ERR;
     }
@@ -55,7 +82,7 @@ public class CellEntry implements Index2D {
                 return Character.getNumericValue(cellString.charAt(1));
             }
             if (cellString.length() == 3) {
-                return Character.getNumericValue(cellString.charAt(2));
+                return Integer.parseInt(cellString.substring(1, 3));
 
             }
         }
