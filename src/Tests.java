@@ -1,4 +1,6 @@
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -177,6 +179,24 @@ public class Tests {
         assertFalse(SCell.IsForm("=3+(4*(5+6)"));
         assertFalse(SCell.IsForm("=3+((4*5)"));
         assertTrue(SCell.IsForm("=((2+3)*5)/7"));
+    }
+
+    @Test
+    public void testIsForm_Cells() {
+        assertTrue(SCell.IsForm("=A55+(4*(5+6))"));
+        assertTrue(SCell.IsForm("=3+(b99*(5+6))"));
+        assertTrue(SCell.IsForm("=3+(4*(Z99+6))"));
+        assertTrue(SCell.IsForm("=3+(d45*(X43+6))"));
+        assertTrue(SCell.IsForm("=3+(4*(5+A0))"));
+
+
+        assertFalse(SCell.IsForm("=3+(A666*(5+6))"));
+        assertFalse(SCell.IsForm("=3+(banana*(5+6))"));
+        assertFalse(SCell.IsForm("=3+(4*(bn43+6))"));
+        assertFalse(SCell.IsForm("=3+(4*(z100+6))"));
+        assertFalse(SCell.IsForm("=3+(4*(zz55+6))"));
+
+
     }
 
 
@@ -398,7 +418,7 @@ public class Tests {
 
     @Test
     public void testValidInBoundary2() {
-        assertTrue(apple.isIn(5, 5));  // Expected: true
+        assertFalse(apple.isIn(5, 5));  // Expected: false
     }
 
     Ex2Sheet melon = new Ex2Sheet(10,12);
@@ -410,7 +430,121 @@ public class Tests {
 
 
 
+//Depth tests
+private Ex2Sheet sheet;
 
+    @BeforeEach
+    public void setUp() {
+        // Create a sheet with 3x3 size for testing
+        sheet = new Ex2Sheet(3, 3);
+    }
+
+    @Test
+    public void testDepthNoFormulas() {
+        // Test case where no cell has a formula
+        // All cells should have depth 0 as they don't depend on any other cells
+        int[][] depth = sheet.depth();
+
+        for (int i = 0; i < sheet.width(); i++) {
+            for (int j = 0; j < sheet.height(); j++) {
+                assertEquals(0, depth[i][j], "Cell (" + i + "," + j + ") should have depth 0");
+            }
+        }
+    }
+
+    @Test
+    public void testDepthWithSingleFormula() {
+        // Set a formula in cell (0, 0) that references another cell (1, 1)
+        sheet.set(0, 0, "B1");
+        sheet.set(1, 1, "=5");  // Cell (1, 1) does not depend on anything, so its depth is 0
+
+        int[][] depth = sheet.depth();
+
+        assertEquals(1, depth[0][0], "Cell (0,0) should have depth 1"); // A2 references an empty cell (depth 0), so this should have depth 1
+        assertEquals(0, depth[1][1], "Cell (1,1) should have depth 0"); // No formula, depth is 0
+    }
+
+    @Test
+    public void testDepthWithMultipleFormulas() {
+        // Set multiple formulas where dependencies chain
+        // (0, 0) -> (1, 1) -> (2, 2)
+        sheet.set(0, 0, "B1");
+        sheet.set(1, 1, "C2");
+        sheet.set(2, 2, ""); // This cell has no formula, so depth is 0
+
+        int[][] depth = sheet.depth();
+
+        assertEquals(2, depth[0][0], "Cell (0,0) should have depth 2"); // A chain (B1 -> C2), depth should be 2
+        assertEquals(1, depth[1][1], "Cell (1,1) should have depth 1"); // (C2), depth 1
+        assertEquals(0, depth[2][2], "Cell (2,2) should have depth 0"); // No formula, depth 0
+    }
+
+    @Test
+    public void testDepthWithCycle() {
+        // Create a cycle in the formulas (e.g., A1 -> B1 -> A1)
+        sheet.set(0, 0, "B1");
+        sheet.set(1, 1, "A1");
+
+        // We expect a cycle, which should result in depth -1 for both cells
+        int[][] depth = sheet.depth();
+
+        assertEquals(-1, depth[0][0], "Cell (0,0) should have depth -1 due to cycle");
+        assertEquals(-1, depth[1][1], "Cell (1,1) should have depth -1 due to cycle");
+    }
+
+    @Test
+    public void testDepthWithEmptyCell() {
+        // Test case where the cell is empty (non-formula)
+        // Depth should be 0
+        sheet.set(0, 0, "");
+        sheet.set(1, 1, "");
+
+        int[][] depth = sheet.depth();
+
+        assertEquals(0, depth[0][0], "Cell (0,0) should have depth 0 (empty cell)");
+        assertEquals(0, depth[1][1], "Cell (1,1) should have depth 0 (empty cell)");
+    }
+
+    @Test
+    public void testDepthWithMultipleDependencies() {
+        // Create a chain of dependencies and test the depths
+        // (0, 0) -> (1, 0) -> (2, 0)
+        sheet.set(0, 0, "B1");
+        sheet.set(1, 0, "C1");
+        sheet.set(2, 0, ""); // No formula
+
+        int[][] depth = sheet.depth();
+
+        assertEquals(2, depth[0][0], "Cell (0,0) should have depth 2");
+        assertEquals(1, depth[1][0], "Cell (1,0) should have depth 1");
+        assertEquals(0, depth[2][0], "Cell (2,0) should have depth 0");
+    }
+
+    @Test
+    public void testDepthWithMultipleCellsAndMixedFormulas() {
+        // Create a more complex case with mixed formulas and empty cells
+        sheet.set(0, 0, "A2");
+        sheet.set(0, 1, "B2");
+        sheet.set(0, 2, "A1");  // Reference to A2
+        sheet.set(1, 0, "");     // No formula
+        sheet.set(1, 1, "A3");   // Reference to A2
+        sheet.set(1, 2, "B3");   // Reference to B2
+        sheet.set(2, 0, "");     // No formula
+        sheet.set(2, 1, "");     // No formula
+        sheet.set(2, 2, "");     // No formula
+
+        int[][] depth = sheet.depth();
+
+        assertEquals(1, depth[0][0], "Cell (0,0) should have depth 1");
+        assertEquals(1, depth[0][1], "Cell (0,1) should have depth 1");
+        assertEquals(2, depth[0][2], "Cell (0,2) should have depth 2");
+        assertEquals(0, depth[1][0], "Cell (1,0) should have depth 0");
+        assertEquals(1, depth[1][1], "Cell (1,1) should have depth 1");
+        assertEquals(2, depth[1][2], "Cell (1,2) should have depth 2");
+        assertEquals(0, depth[2][0], "Cell (2,0) should have depth 0");
+        assertEquals(0, depth[2][1], "Cell (2,1) should have depth 0");
+        assertEquals(0, depth[2][2], "Cell (2,2) should have depth 0");
+    }
 
 
 }

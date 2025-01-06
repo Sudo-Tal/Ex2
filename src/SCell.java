@@ -71,6 +71,13 @@ public void setData(String s) {
     }
 
 
+
+
+
+
+
+
+
     //PreCode
     public static boolean IsNumber(String Text) {
         boolean Ans = true;
@@ -119,6 +126,60 @@ public void setData(String s) {
             Ans = false;
             return Ans;
         }
+
+        // StringBuilder to build the output string
+        StringBuilder result = new StringBuilder();  // To build the output string
+        int length = Text.length();  // Get the length of the input string
+
+        // Iterate through each character of the input string
+        for (int i = 0; i < length; i++) {
+            char currentChar = Text.charAt(i);
+
+            // If the character is a letter (A-Z or a-z), we may have a cell reference
+            if (Character.isLetter(currentChar)) {
+                // Start building the cell reference (it will start with the letter)
+                StringBuilder cellReference = new StringBuilder();
+                cellReference.append(currentChar);
+
+                // Check if the next character is a digit and build the number part
+                if (i + 1 < length && Character.isDigit(Text.charAt(i + 1))) {
+                    StringBuilder numberPart = new StringBuilder();
+                    i++;  // Move to the next character to collect digits
+
+                    // Collect all digits (0-99)
+                    while (i < length && Character.isDigit(Text.charAt(i))) {
+                        numberPart.append(Text.charAt(i));
+                        i++;
+                    }
+
+                    // If the number is between 0 and 99, replace it with "1"
+                    int number = Integer.parseInt(numberPart.toString());
+                    if (number >= 0 && number <= 99) {
+                        result.append("1");  // Replace valid reference with "1"
+                    } else {
+                        // If the number is out of the range (not between 0-99), keep the reference as is
+                        result.append(cellReference);
+                        result.append(numberPart);
+                    }
+                } else {
+                    // If it's just a letter without a valid number, add it as is
+                    result.append(cellReference);
+                }
+
+                // After processing the cell reference, we need to make sure
+                // we are at the next valid character, so we don't skip anything.
+                if (i < length && !Character.isLetter(Text.charAt(i)) && !Character.isDigit(Text.charAt(i))) {
+                    result.append(Text.charAt(i));
+                }
+            } else {
+                // If it's not a letter (i.e., part of a number or some other text), add to the result
+                result.append(currentChar);
+            }
+        }
+
+        // Convert the StringBuilder to a String and return the result
+        Text = result.toString();
+
 
         // check for consecutive operators
         String regex = "[\\+\\-\\*/]{2}";
