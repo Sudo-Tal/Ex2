@@ -1,0 +1,52 @@
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+public class CalcTests {
+
+    private Ex2Sheet sheet;
+
+    @BeforeEach
+    public void setUp() {
+        // Initialize the Ex2Sheet with a 3x3 grid for the tests
+        sheet = new Ex2Sheet(3, 3);
+    }
+
+    @Test
+    public void testEvalBasicValue() {
+        // Test for simple value
+        sheet.set(0, 0, "5");  // Cell A0 = "5"
+
+        String result = sheet.eval(0, 0);
+
+        assertEquals("5.0", result, "Expected the result to be 5.0");
+    }
+
+    @Test
+    public void testEvalSimpleAddition() {
+        // Test for simple addition formula
+        sheet.set(0, 0, "5");  // Cell A0 = "5"
+        sheet.set(1, 0, "3");  // Cell A1 = "3"
+        sheet.set(2, 0, "A0+A1");  // Cell A2 = "A0 + A1"
+
+        String result = sheet.eval(2, 0);
+
+        assertEquals("8.0", result, "Expected the result to be 8.0");
+    }
+
+    @Test
+    public void testEvalComplexFormula() {
+        // Test for nested formulas
+        sheet.set(0, 0, "5");  // Cell A0 = "5"
+        sheet.set(1, 0, "3");  // Cell A1 = "3"
+        sheet.set(0, 1, "10"); // Cell B0 = "10"
+        sheet.set(1, 1, "2");  // Cell B1 = "2"
+        sheet.set(2, 0, "A0+A1");  // Cell A2 = "A0 + A1" -> 5 + 3 = 8
+        sheet.set(2, 1, "B0+B1");  // Cell A2 = "B0 + B1" -> 10 + 2 = 12
+        sheet.set(2, 2, "A2+B2");  // Cell A2 = "A2 + B2" -> 8 + 12 = 20
+
+        String result = sheet.eval(2, 2);
+
+        assertEquals("20.0", result, "Expected the result to be 20.0");
+    }
+}

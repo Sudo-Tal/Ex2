@@ -1,20 +1,24 @@
 // Add your documentation below:
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class SCell implements Cell {
     private String line;
     private int type;
     private int order;
-    String OriginalLine = null;
-    // Add your code here
+    String ChangedlLine = null;
 
     public SCell(String s) {
-        OriginalLine = s;
+        ChangedlLine = s;
         line =s;
         order =0;
 
         //set type
         //order is important
+
+        if (Objects.equals(s, "")){
+            type = 1;
+        }
         if (!IsForm(s)) {
             type =-2;
         }
@@ -39,18 +43,27 @@ public class SCell implements Cell {
     //@Override
     @Override
     public String toString() {
-        return getData();
+        return getOriginalData();
+    }
+
+    public String getOriginalData() {
+        return line;
     }
 
     @Override
 public void setData(String s) {
-        // Add your code here
-        line = s;
-        /////////////////////
+        ChangedlLine = s;
+    }
+    public void setChangedlLine(String s) {
+        ChangedlLine = s;
+    }
+
+    public String getChangedLine(String s) {
+        return ChangedlLine;
     }
     @Override
     public String getData() {
-        return line;
+        return ChangedlLine;
     }
 
     @Override

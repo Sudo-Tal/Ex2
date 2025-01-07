@@ -404,24 +404,23 @@ public class Tests {
     }
 
 
-
     // -------------------- Test IsEntry function --------------------
 
-    Ex2Sheet banana = new Ex2Sheet(25,99);
+    Ex2Sheet banana = new Ex2Sheet(25, 99);
 
     @Test
-        public void testValidInBoundary() {
-            assertTrue(banana.isIn(10, 50));  // Expected: true
-        }
+    public void testValidInBoundary() {
+        assertTrue(banana.isIn(10, 50));  // Expected: true
+    }
 
-    Ex2Sheet apple = new Ex2Sheet(5,5);
+    Ex2Sheet apple = new Ex2Sheet(5, 5);
 
     @Test
     public void testValidInBoundary2() {
         assertFalse(apple.isIn(5, 5));  // Expected: false
     }
 
-    Ex2Sheet melon = new Ex2Sheet(10,12);
+    Ex2Sheet melon = new Ex2Sheet(10, 12);
 
     @Test
     public void testValidInBoundary3() {
@@ -429,15 +428,14 @@ public class Tests {
     }
 
 
-
 //---------------------Depth tests----------------------------
 
-private Ex2Sheet sheet;
+    private Ex2Sheet sheet;
 
     @BeforeEach
     public void setUp() {
-        // Create a sheet with 3x3 size for testing
-        sheet = new Ex2Sheet(3, 3);
+        // Create a sheet of size 5x5 (you can adjust the size as needed)
+        sheet = new Ex2Sheet(5, 5);
     }
 
     @Test
@@ -461,8 +459,8 @@ private Ex2Sheet sheet;
 
         int[][] depth = sheet.depth();
 
-        assertEquals(0, sheet.get(1,1).getOrder(), "Cell (1,1) should have depth 0"); // No formula, depth is 0
-        assertEquals(1, sheet.get(0,0).getOrder(), "Cell (0,0) should have depth 1"); // A2 references an empty cell (depth 0), so this should have depth 1
+        assertEquals(0, sheet.get(1, 1).getOrder(), "Cell (1,1) should have depth 0"); // No formula, depth is 0
+        assertEquals(1, sheet.get(0, 0).getOrder(), "Cell (0,0) should have depth 1"); // A2 references an empty cell (depth 0), so this should have depth 1
     }
 
     @Test
@@ -475,9 +473,9 @@ private Ex2Sheet sheet;
 
         int[][] depth = sheet.depth();
 
-        assertEquals(2, sheet.get(0,0).getOrder(), "Cell (0,0) should have depth 2"); // A chain (B1 -> C2), depth should be 2
-        assertEquals(1, sheet.get(1,1).getOrder(), "Cell (1,1) should have depth 1"); // (C2), depth 1
-        assertEquals(0, sheet.get(2,2).getOrder(), "Cell (2,2) should have depth 0"); // No formula, depth 0
+        assertEquals(2, sheet.get(0, 0).getOrder(), "Cell (0,0) should have depth 2"); // A chain (B1 -> C2), depth should be 2
+        assertEquals(1, sheet.get(1, 1).getOrder(), "Cell (1,1) should have depth 1"); // (C2), depth 1
+        assertEquals(0, sheet.get(2, 2).getOrder(), "Cell (2,2) should have depth 0"); // No formula, depth 0
     }
 
     @Test
@@ -489,8 +487,8 @@ private Ex2Sheet sheet;
         // We expect a cycle, which should result in depth -1 for both cells
         int[][] depth = sheet.depth();
 
-        assertEquals(-1, sheet.get(0,0).getOrder(), "Cell (0,0) should have depth -1 due to cycle");
-        assertEquals(-1, sheet.get(1,1).getOrder(), "Cell (1,1) should have depth -1 due to cycle");
+        assertEquals(-1, sheet.get(0, 0).getOrder(), "Cell (0,0) should have depth -1 due to cycle");
+        assertEquals(-1, sheet.get(1, 1).getOrder(), "Cell (1,1) should have depth -1 due to cycle");
     }
 
     @Test
@@ -521,11 +519,4 @@ private Ex2Sheet sheet;
         assertEquals(0, depth[2][1], "Cell (2,0) should have depth 0");
     }
 
-    
-
-
 }
-
-
-
-
