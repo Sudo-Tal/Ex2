@@ -6,33 +6,37 @@ public class SCell implements Cell {
     private String line;
     private int type;
     private int order;
-    String ChangedlLine = null;
+    String OriginalLine;
 
     public SCell(String s) {
-        ChangedlLine = s;
+        OriginalLine = s;
         line =s;
         order =0;
 
+
         //set type
-        //order is important
+        if (!s.isEmpty() && s.charAt(0) == '=') {
+            if (!IsForm(s)) {
+                type =-2;
+            }
+            if (IsForm(s)) {
+                type =3;
+            }
+            if (order == -1) {
+                type = -1;
+            }
+        }
+        if (!s.isEmpty() && s.charAt(0) != '=') {
 
-        if (Objects.equals(s, "")){
-            type = 1;
+            if (IsText(s)) {
+                type = 1;
+            }
+            if (IsNumber(s)) {
+                type = 2;
+            }
         }
-        if (!IsForm(s)) {
-            type =-2;
-        }
-        if (IsText(s)) {
-            type =1;
-        }
-        if (IsNumber(s)) {
-            type =2;
-        }
-        if (IsForm(s)) {
-            type =3;
-        }
-
         setData(s);
+
     }
 
     @Override
@@ -43,27 +47,24 @@ public class SCell implements Cell {
     //@Override
     @Override
     public String toString() {
-        return getOriginalData();
-    }
-
-    public String getOriginalData() {
-        return line;
+        if (type == Ex2Utils.ERR_FORM_FORMAT) {
+            return Ex2Utils.ERR_FORM;  // Error: Invalid Formula Format
+        } else if (type == Ex2Utils.ERR_CYCLE_FORM) {
+            return Ex2Utils.ERR_CYCLE;  // Error: Circular Dependency
+        } else if (type == -1) {
+            return Ex2Utils.ERR_FORM;  // For any other error types
+        }
+        return line;  // Default to the cell's data if no error
     }
 
     @Override
 public void setData(String s) {
-        ChangedlLine = s;
-    }
-    public void setChangedlLine(String s) {
-        ChangedlLine = s;
+        line = s;
     }
 
-    public String getChangedLine(String s) {
-        return ChangedlLine;
-    }
     @Override
     public String getData() {
-        return ChangedlLine;
+        return OriginalLine;
     }
 
     @Override

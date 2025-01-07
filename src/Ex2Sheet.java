@@ -60,7 +60,7 @@ public class Ex2Sheet implements Sheet {
     @Override
     public void set(int x, int y, String s) {
         table[x][y] = new SCell(s);  // Set the cell at (x, y) to the new value (s)
-        eval();  // Re-evaluate the sheet to handle dependencies
+        eval();
     }
 
     @Override
@@ -195,26 +195,45 @@ public class Ex2Sheet implements Sheet {
         return null;
     }
 
-    // Updated method: Now letters (A, B, C, ...) correspond to columns (X-axis)
-    private int getColumnIndex(String reference) {
-        // Extract the letter part (e.g., "A", "B", "Z")
-        String columnPart = reference.replaceAll("[^A-Za-z]", "");
-        int columnIndex = 0;
+    private int getRowIndex(String reference) {
+        // Extract the letter part (e.g., "A", "B", "Z", or "a", "b", "z")
+        String rowPart = reference.replaceAll("[^A-Za-z]", "").toUpperCase();
+        int rowIndex = 0;
 
-        // Convert the column letters to a 0-based index (e.g., "A" -> 0, "B" -> 1, ..., "Z" -> 25)
-        for (int i = 0; i < columnPart.length(); i++) {
-            columnIndex = columnIndex * 26 + (columnPart.charAt(i) - 'A');
+        // Convert the letters to a 0-based index
+        // A -> 0, B -> 1, Z -> 25, AA -> 26, etc.
+        for (int i = 0; i < rowPart.length(); i++) {
+            rowIndex = rowIndex * 26 + (rowPart.charAt(i) - 'A');
         }
 
-        return columnIndex;  // This gives the X-axis (column) index
+        return rowIndex;
     }
 
-    // Updated method: Now numbers (1, 2, 3, ...) correspond to rows (Y-axis)
-    private int getRowIndex(String reference) {
-        // Extract the numeric part (e.g., "1", "56", "99")
-        String rowPart = reference.replaceAll("[^0-9]", "");
+    private int getColumnIndex(String reference) {
+        // Extract the numeric part (e.g., "0", "1", "56", "99")
+        String columnPart = reference.replaceAll("[^0-9]", "");
 
-        return Integer.parseInt(rowPart);  // This gives the Y-axis (row) index
+        if (columnPart.isEmpty()) {
+            return -1; // Invalid reference
+        }
+
+        // Direct conversion to integer
+        return Integer.parseInt(columnPart);
+    }
+
+    // Helper method to convert from array indices back to spreadsheet coordinates
+    public static String toSpreadsheetCoordinate(int row, int col) {
+        StringBuilder rowName = new StringBuilder();
+
+        // Convert row number to letter(s)
+        int tempRow = row;
+        while (tempRow >= 0) {
+            rowName.insert(0, (char)('A' + (tempRow % 26)));
+            tempRow = (tempRow / 26) - 1;
+        }
+
+        // Add the column number
+        return rowName.toString() + col;
     }
 
     @Override
@@ -241,14 +260,23 @@ public class Ex2Sheet implements Sheet {
 
         // If either the depth or order is -1, set the type to -1 and return an appropriate message
         if (depthValue == -1 || orderValue == -1) {
-            this.table[x][y].setType(-1);  // Set the cell's type to -1 to mark it as invalid or in a cyclic state
-            return "Cycle Error";
+            this.table[x][y].setType(-1);// Set the cell's type to -1 to mark it as invalid or in a cyclic state
+            this.table[x][y].setData(Ex2Utils.ERR_CYCLE);
+            return Ex2Utils.ERR_CYCLE;
         }
 
         // Recursively replace all cell references in the formula with their evaluated values
-        String evaluatedFormula = resolveFormula(formula);
 
+        String evaluatedFormula;
+        try {
+            evaluatedFormula = resolveFormula(formula);
+        } catch (Exception e) {
+            evaluatedFormula = Ex2Utils.ERR_FORM; // Handle error case
+            this.table[x][y].setType(-2);// Set type to -2 in case of exception
+            return evaluatedFormula;
+        }
         // Finally, calculate the numeric result of the formula
+        evaluatedFormula = evaluatedFormula.charAt(0) + evaluatedFormula.substring(1).replace("=", "");
         if (evaluatedFormula != null && !evaluatedFormula.isEmpty()) {
         if (evaluatedFormula.charAt(0) != '=') {
             evaluatedFormula = "=" + evaluatedFormula;
@@ -257,6 +285,10 @@ public class Ex2Sheet implements Sheet {
         double result = SCell.computeForm(evaluatedFormula);
 
         // Return the result as a string
+        if (result == -1) {
+            this.table[x][y].setType(-2);
+            return Ex2Utils.ERR_FORM;
+        }
         return Double.toString(result);
     }
 
@@ -295,6 +327,7 @@ public class Ex2Sheet implements Sheet {
                 String referencedValue = referencedCell.getData();
 
                 // Recursively resolve any other references in the referenced value
+
                 String resolvedValue = resolveFormula(referencedValue);
 
                 // Append the resolved value to the final formula
