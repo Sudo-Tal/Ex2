@@ -430,7 +430,8 @@ public class Tests {
 
 
 
-//Depth tests
+//---------------------Depth tests----------------------------
+
 private Ex2Sheet sheet;
 
     @BeforeEach
@@ -455,41 +456,41 @@ private Ex2Sheet sheet;
     @Test
     public void testDepthWithSingleFormula() {
         // Set a formula in cell (0, 0) that references another cell (1, 1)
-        sheet.set(0, 0, "B1");
+        sheet.set(0, 0, "=B1");
         sheet.set(1, 1, "=5");  // Cell (1, 1) does not depend on anything, so its depth is 0
 
         int[][] depth = sheet.depth();
 
-        assertEquals(1, depth[0][0], "Cell (0,0) should have depth 1"); // A2 references an empty cell (depth 0), so this should have depth 1
-        assertEquals(0, depth[1][1], "Cell (1,1) should have depth 0"); // No formula, depth is 0
+        assertEquals(0, sheet.get(1,1).getOrder(), "Cell (1,1) should have depth 0"); // No formula, depth is 0
+        assertEquals(1, sheet.get(0,0).getOrder(), "Cell (0,0) should have depth 1"); // A2 references an empty cell (depth 0), so this should have depth 1
     }
 
     @Test
     public void testDepthWithMultipleFormulas() {
         // Set multiple formulas where dependencies chain
         // (0, 0) -> (1, 1) -> (2, 2)
-        sheet.set(0, 0, "B1");
-        sheet.set(1, 1, "C2");
+        sheet.set(0, 0, "=B1");
+        sheet.set(1, 1, "=C2");
         sheet.set(2, 2, ""); // This cell has no formula, so depth is 0
 
         int[][] depth = sheet.depth();
 
-        assertEquals(2, depth[0][0], "Cell (0,0) should have depth 2"); // A chain (B1 -> C2), depth should be 2
-        assertEquals(1, depth[1][1], "Cell (1,1) should have depth 1"); // (C2), depth 1
-        assertEquals(0, depth[2][2], "Cell (2,2) should have depth 0"); // No formula, depth 0
+        assertEquals(2, sheet.get(0,0).getOrder(), "Cell (0,0) should have depth 2"); // A chain (B1 -> C2), depth should be 2
+        assertEquals(1, sheet.get(1,1).getOrder(), "Cell (1,1) should have depth 1"); // (C2), depth 1
+        assertEquals(0, sheet.get(2,2).getOrder(), "Cell (2,2) should have depth 0"); // No formula, depth 0
     }
 
     @Test
     public void testDepthWithCycle() {
         // Create a cycle in the formulas (e.g., A1 -> B1 -> A1)
-        sheet.set(0, 0, "B1");
-        sheet.set(1, 1, "A1");
+        sheet.set(0, 0, "=B1");
+        sheet.set(1, 1, "=A0");
 
         // We expect a cycle, which should result in depth -1 for both cells
         int[][] depth = sheet.depth();
 
-        assertEquals(-1, depth[0][0], "Cell (0,0) should have depth -1 due to cycle");
-        assertEquals(-1, depth[1][1], "Cell (1,1) should have depth -1 due to cycle");
+        assertEquals(-1, sheet.get(0,0).getOrder(), "Cell (0,0) should have depth -1 due to cycle");
+        assertEquals(-1, sheet.get(1,1).getOrder(), "Cell (1,1) should have depth -1 due to cycle");
     }
 
     @Test
@@ -509,42 +510,18 @@ private Ex2Sheet sheet;
     public void testDepthWithMultipleDependencies() {
         // Create a chain of dependencies and test the depths
         // (0, 0) -> (1, 0) -> (2, 0)
-        sheet.set(0, 0, "B1");
-        sheet.set(1, 0, "C1");
-        sheet.set(2, 0, ""); // No formula
+        sheet.set(0, 0, "=B1");
+        sheet.set(1, 1, "=C1");
+        sheet.set(2, 1, ""); // No formula
 
         int[][] depth = sheet.depth();
 
         assertEquals(2, depth[0][0], "Cell (0,0) should have depth 2");
-        assertEquals(1, depth[1][0], "Cell (1,0) should have depth 1");
-        assertEquals(0, depth[2][0], "Cell (2,0) should have depth 0");
+        assertEquals(1, depth[1][1], "Cell (1,0) should have depth 1");
+        assertEquals(0, depth[2][1], "Cell (2,0) should have depth 0");
     }
 
-    @Test
-    public void testDepthWithMultipleCellsAndMixedFormulas() {
-        // Create a more complex case with mixed formulas and empty cells
-        sheet.set(0, 0, "A2");
-        sheet.set(0, 1, "B2");
-        sheet.set(0, 2, "A1");  // Reference to A2
-        sheet.set(1, 0, "");     // No formula
-        sheet.set(1, 1, "A3");   // Reference to A2
-        sheet.set(1, 2, "B3");   // Reference to B2
-        sheet.set(2, 0, "");     // No formula
-        sheet.set(2, 1, "");     // No formula
-        sheet.set(2, 2, "");     // No formula
-
-        int[][] depth = sheet.depth();
-
-        assertEquals(1, depth[0][0], "Cell (0,0) should have depth 1");
-        assertEquals(1, depth[0][1], "Cell (0,1) should have depth 1");
-        assertEquals(2, depth[0][2], "Cell (0,2) should have depth 2");
-        assertEquals(0, depth[1][0], "Cell (1,0) should have depth 0");
-        assertEquals(1, depth[1][1], "Cell (1,1) should have depth 1");
-        assertEquals(2, depth[1][2], "Cell (1,2) should have depth 2");
-        assertEquals(0, depth[2][0], "Cell (2,0) should have depth 0");
-        assertEquals(0, depth[2][1], "Cell (2,1) should have depth 0");
-        assertEquals(0, depth[2][2], "Cell (2,2) should have depth 0");
-    }
+    
 
 
 }

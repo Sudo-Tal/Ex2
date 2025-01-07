@@ -10,6 +10,8 @@ public class SCell implements Cell {
 
     public SCell(String s) {
         OriginalLine = s;
+        line =s;
+        order =0;
 
         //set type
         //order is important
@@ -31,11 +33,8 @@ public class SCell implements Cell {
 
     @Override
     public int getOrder() {
-        // Add your code here
-
-        return 0;
-        // ///////////////////
-    }
+            return order;  // Return the actual value of the 'order' field
+        }
 
     //@Override
     @Override
@@ -66,7 +65,7 @@ public void setData(String s) {
 
     @Override
     public void setOrder(int t) {
-        // Add your code here
+        order = t;
 
     }
 

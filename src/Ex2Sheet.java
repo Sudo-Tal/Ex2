@@ -13,7 +13,7 @@ public class Ex2Sheet implements Sheet {
                 table[i][j] = new SCell("");  // Initialize with empty cells
             }
         }
-        eval();  // Initial evaluation
+       eval();  // Initial evaluation
     }
 
     public Ex2Sheet() {
@@ -66,7 +66,7 @@ public class Ex2Sheet implements Sheet {
 
     @Override
     public void eval() {
-        int[][] dd = depth();
+     //   int[][] dd = depth();
         // This method will evaluate formulas based on depth
         // You may need to implement specific logic to recalculate or update cell values based on dependencies
     }
@@ -85,20 +85,27 @@ public class Ex2Sheet implements Sheet {
             for (int j = 0; j < height(); j++) {
                 SCell currentCell = (SCell) table[i][j];
 
-                if (currentCell.getType() != 3) {  // If it's not a formula
-                    ans[i][j] = 0;
-                    currentCell.setOrder(0);  // Depth is 0 for non-formula cells
+                if (currentCell.getType() != 3) {  // If it's not a formula (i.e., a value cell)
+                    ans[i][j] = 0;  // Depth for non-formula cells is 0
+                    currentCell.setOrder(0);  // Set order to 0 for non-formula cells
                 } else {
                     // If it's a formula, calculate depth recursively
                     int depthValue = calculateDepth(currentCell, visited);
-                    ans[i][j] = depthValue;
-                    currentCell.setOrder(depthValue);
+                    if (depthValue != -1) {
+                        // Only add +1 if the depth is greater than 0 (i.e., there is a dependency)
+                        ans[i][j] = depthValue;
+                        currentCell.setOrder(ans[i][j]);
+                    } else {
+                        ans[i][j] = -1;  // Cycle detected
+                        currentCell.setOrder(-1);
+                    }
                 }
             }
         }
 
         return ans;
     }
+
 
     // Helper function to recursively calculate the depth of a formula cell
     private int calculateDepth(SCell cell, ArrayList<SCell> visited) {
@@ -108,8 +115,10 @@ public class Ex2Sheet implements Sheet {
 
         visited.add(cell);
         String formula = cell.getData();
-        int maxDepth = 0;
+        int maxDepth = 0;  // Start with depth 0, meaning no dependencies
+
         int index = 0;
+        boolean hasReferences = false;  // Flag to track if the formula has references
 
         while (index < formula.length()) {
             if (Character.isLetter(formula.charAt(index))) {
@@ -125,7 +134,8 @@ public class Ex2Sheet implements Sheet {
                     if (referencedDepth == -1) {
                         return -1;  // Cycle detected
                     }
-                    maxDepth = Math.max(maxDepth, referencedDepth);
+                    maxDepth = Math.max(maxDepth, referencedDepth);  // Track the maximum depth
+                    hasReferences = true;  // Mark that this formula has references
                 }
             } else {
                 index++;
@@ -133,8 +143,12 @@ public class Ex2Sheet implements Sheet {
         }
 
         visited.remove(cell);  // Remove the current cell from the visited list
-        return maxDepth + 1;  // Return max depth + 1
-    }
+
+// If the formula has references, return maxDepth + 1; otherwise, return 0 (indicating no dependencies)
+        return hasReferences ? maxDepth + 1 : 0;    }
+
+
+
 
     private SCell getCellByReference(String reference) {
         int colIndex = getColumnIndex(reference);
@@ -157,7 +171,7 @@ public class Ex2Sheet implements Sheet {
 
     private int getRowIndex(String reference) {
         String rowPart = reference.replaceAll("[^0-9]", "");
-        return Integer.parseInt(rowPart) - 1;  // Convert to 0-based index
+        return Integer.parseInt(rowPart);  // Convert to 0-based index
     }
 
     @Override
