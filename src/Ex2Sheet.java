@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class Ex2Sheet implements Sheet {
-    private Cell[][] table;
+    private final Cell[][] table;
 
     // ///////////////////
     public Ex2Sheet(int x, int y) {
@@ -17,6 +17,21 @@ public class Ex2Sheet implements Sheet {
 
     public Ex2Sheet() {
         this(Ex2Utils.WIDTH, Ex2Utils.HEIGHT);  // Default width and height from Ex2Utils
+    }
+
+    // Helper method to convert from array indices back to spreadsheet coordinates
+    public static String toSpreadsheetCoordinate(int row, int col) {
+        StringBuilder rowName = new StringBuilder();
+
+        // Convert row number to letter(s)
+        int tempRow = row;
+        while (tempRow >= 0) {
+            rowName.insert(0, (char) ('A' + (tempRow % 26)));
+            tempRow = (tempRow / 26) - 1;
+        }
+
+        // Add the column number
+        return rowName.toString() + col;
     }
 
     @Override
@@ -63,15 +78,20 @@ public class Ex2Sheet implements Sheet {
         eval();
     }
 
-
-
-    public void UpdateType (int x, int y, String s) {
-        if (this.table[x][y].getType() != -1 || this.table[x][y].getType() != -2){
-        if (SCell.IsText(this.table[x][y].getData())) {this.table[x][y].setType(1);}
-        if (SCell.IsForm(this.table[x][y].getData())) {this.table[x][y].setType(3);}
-        if (SCell.IsNumber(this.table[x][y].getData())) {this.table[x][y].setType(2);}
+    public void UpdateType(int x, int y, String s) {
+        if (this.table[x][y].getType() != -1 || this.table[x][y].getType() != -2) {
+            if (SCell.IsText(this.table[x][y].getData())) {
+                this.table[x][y].setType(1);
+            }
+            if (SCell.IsForm(this.table[x][y].getData())) {
+                this.table[x][y].setType(3);
+            }
+            if (SCell.IsNumber(this.table[x][y].getData())) {
+                this.table[x][y].setType(2);
+            }
+        }
     }
-    }
+
     @Override
     public void eval() {
         // Step 1: Calculate the depth array for all cells
@@ -86,7 +106,7 @@ public class Ex2Sheet implements Sheet {
                 // Get the current cell's depth order from the depth array (dd)
                 int order = dd[i][j];
                 if (order != -1) {  // Avoid adding cells with invalid order (e.g., cycle detected)
-                    cellCoordinates.add(new int[] {i, j, order});
+                    cellCoordinates.add(new int[]{i, j, order});
                 }
             }
         }
@@ -108,9 +128,9 @@ public class Ex2Sheet implements Sheet {
 
                 // Call the eval(x, y) method to evaluate the formula for this cell
 
-               String result = "";
+                String result = "";
                 try {
-                     result = eval(x, y);
+                    result = eval(x, y);
                 } catch (StackOverflowError e) {
                     this.table[x][y].setType(-1);
                     this.table[x][y].setData(Ex2Utils.ERR_CYCLE);
@@ -122,9 +142,6 @@ public class Ex2Sheet implements Sheet {
             }
         }
     }
-
-
-
 
     @Override
     public boolean isIn(int xx, int yy) {
@@ -160,7 +177,6 @@ public class Ex2Sheet implements Sheet {
 
         return ans;
     }
-
 
     // Helper function to recursively calculate the depth of a formula cell
     private int calculateDepth(SCell cell, ArrayList<SCell> visited) {
@@ -239,21 +255,6 @@ public class Ex2Sheet implements Sheet {
         return Integer.parseInt(columnPart);
     }
 
-    // Helper method to convert from array indices back to spreadsheet coordinates
-    public static String toSpreadsheetCoordinate(int row, int col) {
-        StringBuilder rowName = new StringBuilder();
-
-        // Convert row number to letter(s)
-        int tempRow = row;
-        while (tempRow >= 0) {
-            rowName.insert(0, (char)('A' + (tempRow % 26)));
-            tempRow = (tempRow / 26) - 1;
-        }
-
-        // Add the column number
-        return rowName.toString() + col;
-    }
-
     @Override
     public void load(String fileName) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
@@ -285,7 +286,7 @@ public class Ex2Sheet implements Sheet {
             for (int row = 0; row < width(); row++) {
                 for (int col = 0; col < height(); col++) {
                     Cell cell = table[row][col];
-                    String cellValue = cell.toString();  // Assuming the cell class has a proper toString() method
+                    String cellValue = cell.getData();  // Assuming the cell class has a proper toString() method
 
                     // Check if the cell is empty (empty cells are represented by Ex2Utils.EMPTY_CELL or similar)
                     if (!cellValue.equals(Ex2Utils.EMPTY_CELL)) {
@@ -302,7 +303,7 @@ public class Ex2Sheet implements Sheet {
     public String eval(int x, int y) {
         // Get the current cell's formula
         String formula = get(x, y).getData();
-        if (this.table[x][y].getData().charAt(0) =='=' && !SCell.IsForm(formula)){
+        if (this.table[x][y].getData().charAt(0) == '=' && !SCell.IsForm(formula)) {
             this.table[x][y].setType(-2);
             return Ex2Utils.ERR_FORM;
         }
@@ -331,9 +332,9 @@ public class Ex2Sheet implements Sheet {
         // Finally, calculate the numeric result of the formula
         evaluatedFormula = evaluatedFormula.charAt(0) + evaluatedFormula.substring(1).replace("=", "");
         if (evaluatedFormula != null && !evaluatedFormula.isEmpty()) {
-        if (evaluatedFormula.charAt(0) != '=') {
-            evaluatedFormula = "=" + evaluatedFormula;
-        }
+            if (evaluatedFormula.charAt(0) != '=') {
+                evaluatedFormula = "=" + evaluatedFormula;
+            }
         }
         double result = SCell.computeForm(evaluatedFormula);
 

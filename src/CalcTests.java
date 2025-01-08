@@ -80,7 +80,12 @@ public class CalcTests {
         sheet.set(2, 0, "A0+A1");  // Cell A2 = "A0 + A1"
 
         String result = sheet.eval(0, 0);
+        int[][] calc_d = sheet.depth();
+        if (calc_d[0][0] == -1) {
+            sheet.get(0,0).setType(Ex2Utils.ERR_CYCLE_FORM);
+        }
 
+        assertEquals(-1 ,calc_d);
         assertEquals("ERR_CYCLE!", result, "Expected the result to be cycle");
     }
 

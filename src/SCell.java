@@ -1,26 +1,26 @@
 // Add your documentation below:
+
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class SCell implements Cell {
+    String OriginalLine;
     private String line;
     private int type;
     private int order;
-    String OriginalLine;
 
     public SCell(String s) {
         OriginalLine = s;
-        line =s;
-        order =0;
+        line = s;
+        order = 0;
 
 
         //set type
         if (!s.isEmpty() && s.charAt(0) == '=') {
             if (!IsForm(s)) {
-                type =-2;
+                type = -2;
             }
             if (IsForm(s)) {
-                type =3;
+                type = 3;
             }
             if (order == -1) {
                 type = -1;
@@ -38,58 +38,6 @@ public class SCell implements Cell {
         setData(s);
 
     }
-
-    @Override
-    public int getOrder() {
-            return order;  // Return the actual value of the 'order' field
-        }
-
-    //@Override
-    @Override
-    public String toString() {
-        if (type == Ex2Utils.ERR_FORM_FORMAT) {
-            return Ex2Utils.ERR_FORM;  // Error: Invalid Formula Format
-        } else if (type == Ex2Utils.ERR_CYCLE_FORM) {
-            return Ex2Utils.ERR_CYCLE;  // Error: Circular Dependency
-        } else if (type == -1) {
-            return Ex2Utils.ERR_FORM;  // For any other error types
-        }
-        return line;  // Default to the cell's data if no error
-    }
-
-    @Override
-public void setData(String s) {
-        line = s;
-    }
-
-    @Override
-    public String getData() {
-        return OriginalLine;
-    }
-
-    @Override
-    public int getType() {
-        return type;
-    }
-
-    @Override
-    public void setType(int t) {
-        type = t;
-    }
-
-    @Override
-    public void setOrder(int t) {
-        order = t;
-
-    }
-
-
-
-
-
-
-
-
 
     //PreCode
     public static boolean IsNumber(String Text) {
@@ -408,7 +356,6 @@ public void setData(String s) {
         return Ans;
     }
 
-
     public static Double computeForm(String form) {
         if (!IsForm(form)) {
             return -1.0;
@@ -423,7 +370,7 @@ public void setData(String s) {
         if (form.charAt(0) == '(' && form.charAt(form.length() - 1) == ')') {
             // Remove the first and last characters (parentheses)
             //check if result is valid
-            if (IsForm('='+form.substring(1, form.length() - 1))){
+            if (IsForm('=' + form.substring(1, form.length() - 1))) {
                 form = form.substring(1, form.length() - 1);
             }
         }
@@ -452,6 +399,50 @@ public void setData(String s) {
         // Calculate the result of this operator
         double result = performOperation(leftValue, rightValue, operator);
         return result;
+    }
+
+    @Override
+    public int getOrder() {
+        return order;  // Return the actual value of the 'order' field
+    }
+
+    @Override
+    public void setOrder(int t) {
+        order = t;
+
+    }
+
+    //@Override
+    @Override
+    public String toString() {
+        if (type == Ex2Utils.ERR_FORM_FORMAT) {
+            return Ex2Utils.ERR_FORM;  // Error: Invalid Formula Format
+        } else if (type == Ex2Utils.ERR_CYCLE_FORM) {
+            return Ex2Utils.ERR_CYCLE;  // Error: Circular Dependency
+        } else if (type == -1) {
+            return Ex2Utils.ERR_FORM;  // For any other error types
+        }
+        return line;  // Default to the cell's data if no error
+    }
+
+    @Override
+    public String getData() {
+        return OriginalLine;
+    }
+
+    @Override
+    public void setData(String s) {
+        line = s;
+    }
+
+    @Override
+    public int getType() {
+        return type;
+    }
+
+    @Override
+    public void setType(int t) {
+        type = t;
     }
 
 

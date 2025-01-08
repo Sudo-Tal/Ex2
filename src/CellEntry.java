@@ -1,21 +1,22 @@
 // Add your documentation below:
 
 public class CellEntry implements Index2D {
-    private String cellString;
+    private final String cellString;
 
-    //Constructor make me
+    //Constructor
     public CellEntry(String cellString) {
-    this.cellString=cellString;
+        this.cellString = cellString;
     }
-    public CellEntry(int x, int y) {this.cellString=convertX(x)+convertY(y);}
+
+    public CellEntry(int x, int y) {
+        this.cellString = convertX(x) + convertY(y);
+    }
 
     @Override
     public boolean isValid() {
-        if (cellString.matches("[A-Za-z]\\d{1,2}") && Integer.parseInt(cellString.substring(1)) >= 0 && Integer.parseInt(cellString.substring(1)) <= 99) {
-            return true;
-        }
-        return false;
+        return cellString.matches("[A-Za-z]\\d{1,2}") && Integer.parseInt(cellString.substring(1)) >= 0 && Integer.parseInt(cellString.substring(1)) <= 99;
     }
+
     @Override
     public int getX() {
         if (isValid()) {
@@ -89,6 +90,7 @@ public class CellEntry implements Index2D {
         }
         return Ex2Utils.ERR;
     }
+
     private String convertX(int num) {
         if (num >= 0 && num < 26) {
             return Character.toString((char) ('A' + num)); // Convert 0-25 to 'A'-'Z'
@@ -96,10 +98,10 @@ public class CellEntry implements Index2D {
 
         return null;
     }
+
     private String convertY(int num) {
         return String.valueOf(num);
     }
-
 
 
     @Override
@@ -107,5 +109,6 @@ public class CellEntry implements Index2D {
         if (isValid()) {
             return cellString;
         }
-        return "Wrong Format";}
+        return "Wrong Format";
+    }
 }

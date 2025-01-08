@@ -1,6 +1,7 @@
 
 import java.awt.*;
 import java.io.IOException;
+import java.sql.SQLOutput;
 
 /**
  * ArielU. Intro2CS, Ex2: https://docs.google.com/document/d/1-18T-dj00apE4k1qmpXGOaqttxLn-Kwi/edit?usp=sharing&ouid=113711744349547563645&rtpof=true&sd=true
@@ -123,10 +124,9 @@ public class Ex2GUI {
 	 */
 	private static void inputCell(int xx,int yy) {
 		if(table.isIn(xx,yy)) {
-			//cord here
 			Cell cc = table.get(xx,yy);
 			cord = new CellEntry(xx,yy);
-			String ww = cord+": "+cc.toString()+" : ";
+			String ww = cord+": "+cc.getData()+" : ";
 			StdDrawEx2.text(Ex2Utils.GUI_X_START, Ex2Utils.MAX_X-1, ww);
 			StdDrawEx2.show();
 			if(Ex2Utils.Debug) {System.out.println(ww);}
