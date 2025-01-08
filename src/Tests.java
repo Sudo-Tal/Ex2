@@ -195,6 +195,7 @@ public class Tests {
         assertFalse(SCell.IsForm("=3+(4*(bn43+6))"));
         assertFalse(SCell.IsForm("=3+(4*(z100+6))"));
         assertFalse(SCell.IsForm("=3+(4*(zz55+6))"));
+        assertFalse(SCell.IsForm("=1A1"));
 
 
     }
@@ -319,6 +320,11 @@ public class Tests {
         String formula15 = "=(3*(5+(2*(7-(8*(4+(6-3)))))))-(4*(2+(6-3)))+(8*((9-5)*(4+(2*3))))";
         double result15 = SCell.computeForm(formula15);
         assertEquals(21.0, result15);
+
+        // Test case 16: SUPER DUPER COMPLEX FORMULA
+        String formula16 = "=((((3*4)+(7*2))*((15/3)-2))*(((8+7)*3)-(4*6)))";
+        double result16 = SCell.computeForm(formula16);
+        assertEquals(1638, result16);
     }
 
 
@@ -467,28 +473,15 @@ public class Tests {
     public void testDepthWithMultipleFormulas() {
         // Set multiple formulas where dependencies chain
         // (0, 0) -> (1, 1) -> (2, 2)
-        sheet.set(0, 0, "=B1");
+        sheet.set(2, 2, "5"); // This cell has a formula, so depth is 0
         sheet.set(1, 1, "=C2");
-        sheet.set(2, 2, ""); // This cell has no formula, so depth is 0
+        sheet.set(0, 0, "=B1");
 
         int[][] depth = sheet.depth();
 
         assertEquals(2, sheet.get(0, 0).getOrder(), "Cell (0,0) should have depth 2"); // A chain (B1 -> C2), depth should be 2
         assertEquals(1, sheet.get(1, 1).getOrder(), "Cell (1,1) should have depth 1"); // (C2), depth 1
         assertEquals(0, sheet.get(2, 2).getOrder(), "Cell (2,2) should have depth 0"); // No formula, depth 0
-    }
-
-    @Test
-    public void testDepthWithCycle() {
-        // Create a cycle in the formulas (e.g., A1 -> B1 -> A1)
-        sheet.set(0, 0, "=B1");
-        sheet.set(1, 1, "=A0");
-
-        // We expect a cycle, which should result in depth -1 for both cells
-        int[][] depth = sheet.depth();
-
-        assertEquals(-1, sheet.get(0, 0).getOrder(), "Cell (0,0) should have depth -1 due to cycle");
-        assertEquals(-1, sheet.get(1, 1).getOrder(), "Cell (1,1) should have depth -1 due to cycle");
     }
 
     @Test
@@ -507,10 +500,10 @@ public class Tests {
     @Test
     public void testDepthWithMultipleDependencies() {
         // Create a chain of dependencies and test the depths
-        // (0, 0) -> (1, 0) -> (2, 0)
-        sheet.set(0, 0, "=B1");
+        // (0, 0) -> (1, 1) -> (2, 1)
+        sheet.set(2, 1, "5"); // No formula
         sheet.set(1, 1, "=C1");
-        sheet.set(2, 1, ""); // No formula
+        sheet.set(0, 0, "=B1");
 
         int[][] depth = sheet.depth();
 

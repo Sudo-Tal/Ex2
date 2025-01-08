@@ -1,4 +1,4 @@
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
 public class Ex2Sheet implements Sheet {
@@ -63,6 +63,15 @@ public class Ex2Sheet implements Sheet {
         eval();
     }
 
+
+
+    public void UpdateType (int x, int y, String s) {
+        if (this.table[x][y].getType() != -1 || this.table[x][y].getType() != -2){
+        if (SCell.IsText(this.table[x][y].getData())) {this.table[x][y].setType(1);}
+        if (SCell.IsForm(this.table[x][y].getData())) {this.table[x][y].setType(3);}
+        if (SCell.IsNumber(this.table[x][y].getData())) {this.table[x][y].setType(2);}
+    }
+    }
     @Override
     public void eval() {
         // Step 1: Calculate the depth array for all cells
@@ -90,14 +99,23 @@ public class Ex2Sheet implements Sheet {
             int x = cellCoord[0];
             int y = cellCoord[1];
 
+            UpdateType(x, y, this.table[x][y].toString());
             // Check if the cell type is 3 before proceeding with the evaluation
-            if (this.table[x][y].getType() == 3) {
+            if (this.table[x][y].getType() == 3 || this.table[x][y].getType() == -1 || this.table[x][y].getType() == -2) {
 
                 // Retrieve the data (formula or value) for the cell
                 String formula = this.table[x][y].getData();
 
                 // Call the eval(x, y) method to evaluate the formula for this cell
-                String result = eval(x, y);
+
+               String result = "";
+                try {
+                     result = eval(x, y);
+                } catch (StackOverflowError e) {
+                    this.table[x][y].setType(-1);
+                    this.table[x][y].setData(Ex2Utils.ERR_CYCLE);
+                    result = Ex2Utils.ERR_CYCLE;
+                }
 
                 // Set the evaluated result back into the cell's data (this assumes setData is available in your cell class)
                 this.table[x][y].setData(result);  // Update the cell's value with the evaluated result
@@ -238,21 +256,56 @@ public class Ex2Sheet implements Sheet {
 
     @Override
     public void load(String fileName) throws IOException {
-        // Implement file loading logic here
-        // You can use BufferedReader or FileReader to read the file contents
-        // and populate the `table` based on the data in the file
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Split the line by commas (row, col, value)
+                String[] parts = line.split(",");
+                if (parts.length == 3) {
+                    try {
+                        // Parse row, col, and value
+                        int row = Integer.parseInt(parts[0]);
+                        int col = Integer.parseInt(parts[1]);
+                        String value = parts[2];
+
+                        // Update the corresponding cell with the loaded value
+                        this.set(row, col, value);
+                    } catch (NumberFormatException e) {
+                        System.err.println("Skipping invalid line: " + line);
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public void save(String fileName) throws IOException {
-        // Implement file saving logic here
-        // You can use BufferedWriter or FileWriter to save the current sheet data to a file
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            // Iterate over each cell in the table and write it to the file
+            for (int row = 0; row < width(); row++) {
+                for (int col = 0; col < height(); col++) {
+                    Cell cell = table[row][col];
+                    String cellValue = cell.toString();  // Assuming the cell class has a proper toString() method
+
+                    // Check if the cell is empty (empty cells are represented by Ex2Utils.EMPTY_CELL or similar)
+                    if (!cellValue.equals(Ex2Utils.EMPTY_CELL)) {
+                        // Write the row, column, and cell value (can modify format if needed)
+                        writer.write(row + "," + col + "," + cellValue);
+                        writer.newLine();  // Move to the next line for the next cell
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public String eval(int x, int y) {
         // Get the current cell's formula
         String formula = get(x, y).getData();
+        if (this.table[x][y].getData().charAt(0) =='=' && !SCell.IsForm(formula)){
+            this.table[x][y].setType(-2);
+            return Ex2Utils.ERR_FORM;
+        }
 
         // Check if the cell has a valid order and depth (not equal to -1)
         int depthValue = depth()[x][y];  // Retrieve the depth from the depth array for this cell

@@ -125,6 +125,7 @@ public class Ex2GUI {
 		if(table.isIn(xx,yy)) {
 			//cord here
 			Cell cc = table.get(xx,yy);
+			cord = new CellEntry(xx,yy);
 			String ww = cord+": "+cc.toString()+" : ";
 			StdDrawEx2.text(Ex2Utils.GUI_X_START, Ex2Utils.MAX_X-1, ww);
 			StdDrawEx2.show();

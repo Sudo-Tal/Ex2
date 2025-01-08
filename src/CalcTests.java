@@ -42,7 +42,7 @@ public class CalcTests {
 
         String result = sheet.eval(1, 0);
 
-        assertEquals("ERR_FORM!", result, "Expected the result to be 8.0");
+        assertEquals("ERR_FORM!", result, "Expected the result to be ERROR");
     }
 
     @Test
@@ -53,7 +53,7 @@ public class CalcTests {
 
         String result = sheet.eval(0, 0);
 
-        assertEquals("ERR_FORM!", result, "Expected the result to be 8.0");
+        assertEquals("ERR_FORM!", result, "Expected the result to be ERROR");
     }
 
     @Test
@@ -101,4 +101,20 @@ public class CalcTests {
         assertEquals("ERR_CYCLE!", sheet.eval(0, 2), "Expected the result to be Cycle");
 
     }
+
+
+    @Test
+    public void test1A1Issue() {
+        // Test for simple addition formula
+        sheet.set(0, 0, "=1A1");  // Cell A0 = "1A1"
+        sheet.set(0, 1, "5");  // Cell A1 = "5"
+        if (!SCell.IsForm("1A1")) {
+            System.out.println("IT WORK");
+        };
+
+        String result = sheet.eval(0, 0);
+
+        assertEquals("ERR_FORM!", result, "Expected the result to be ERROR");
+    }
+
 }

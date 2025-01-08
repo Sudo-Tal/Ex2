@@ -7,6 +7,7 @@ public class CellEntry implements Index2D {
     public CellEntry(String cellString) {
     this.cellString=cellString;
     }
+    public CellEntry(int x, int y) {this.cellString=convertX(x)+convertY(y);}
 
     @Override
     public boolean isValid() {
@@ -88,6 +89,18 @@ public class CellEntry implements Index2D {
         }
         return Ex2Utils.ERR;
     }
+    private String convertX(int num) {
+        if (num >= 0 && num < 26) {
+            return Character.toString((char) ('A' + num)); // Convert 0-25 to 'A'-'Z'
+        }
+
+        return null;
+    }
+    private String convertY(int num) {
+        return String.valueOf(num);
+    }
+
+
 
     @Override
     public String toString() {

@@ -140,6 +140,17 @@ public void setData(String s) {
             return Ans;
         }
 
+        // Check for numbers adjacent to letters in invalid order (e.g., 1A, but allow A1)
+        for (int i = 0; i < Text.length() - 1; i++) {
+            char currChar = Text.charAt(i);
+            char nextChar = Text.charAt(i + 1);
+
+            // Check if a digit is immediately followed by a letter (invalid: 1A)
+            if (Character.isDigit(currChar) && Character.isLetter(nextChar)) {
+                return false; // Invalid: number adjacent to cell reference in wrong order
+            }
+        }
+
         // StringBuilder to build the output string
         StringBuilder result = new StringBuilder();  // To build the output string
         int length = Text.length();  // Get the length of the input string
