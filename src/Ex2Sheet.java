@@ -120,8 +120,8 @@ public class Ex2Sheet implements Sheet {
             int y = cellCoord[1];
 
             UpdateType(x, y, this.table[x][y].toString());
-            // Check if the cell type is 3 before proceeding with the evaluation
-            if (this.table[x][y].getType() == 3 || this.table[x][y].getType() == -1 || this.table[x][y].getType() == -2) {
+            // Check the cell type before proceeding with the evaluation
+            if (this.table[x][y].getType() == 3 || this.table[x][y].getType() == -1 || this.table[x][y].getType() == -2 || this.table[x][y].getType() == 2) {
 
                 // Retrieve the data (formula or value) for the cell
                 String formula = this.table[x][y].getData();
@@ -137,7 +137,7 @@ public class Ex2Sheet implements Sheet {
                     result = Ex2Utils.ERR_CYCLE;
                 }
 
-                // Set the evaluated result back into the cell's data (this assumes setData is available in your cell class)
+                // Set the evaluated result back into the cell's data
                 this.table[x][y].setData(result);  // Update the cell's value with the evaluated result
             }
         }
@@ -336,8 +336,19 @@ public class Ex2Sheet implements Sheet {
                 evaluatedFormula = "=" + evaluatedFormula;
             }
         }
-        double result = SCell.computeForm(evaluatedFormula);
 
+        //Trying to calc the double result, added defence for division by zero
+        String resultString;
+        double result = 0;
+        try {
+            result = SCell.computeForm(evaluatedFormula);
+            resultString = String.valueOf(result);
+        } catch (ArithmeticException e) {
+            resultString = "Infinity";
+            this.table[x][y].setData(resultString);
+            return resultString;
+        }
+        
         // Return the result as a string
         if (result == -1) {
             this.table[x][y].setType(-2);
@@ -377,11 +388,10 @@ public class Ex2Sheet implements Sheet {
                 String cellRef = cellReference.toString();
 
                 // Get the value from the referenced cell
-                SCell referencedCell = (SCell) get(cellRef);  // `get(cellRef)` assumes you have a method to retrieve the cell by its reference.
-                String referencedValue = referencedCell.getData();
+                SCell referencedCell = (SCell) get(cellRef);  //
+                String referencedValue = referencedCell.toString();
 
                 // Recursively resolve any other references in the referenced value
-
                 String resolvedValue = resolveFormula(referencedValue);
 
                 // Append the resolved value to the final formula

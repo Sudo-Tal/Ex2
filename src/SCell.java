@@ -366,12 +366,16 @@ public class SCell implements Cell {
             form = form.substring(1);
         }
 
-        //check if expression is parentheses
-        if (form.charAt(0) == '(' && form.charAt(form.length() - 1) == ')') {
+        // Check if expression has parentheses at both ends
+        while (form.charAt(0) == '(' && form.charAt(form.length() - 1) == ')') {
             // Remove the first and last characters (parentheses)
-            //check if result is valid
-            if (IsForm('=' + form.substring(1, form.length() - 1))) {
-                form = form.substring(1, form.length() - 1);
+            String newForm = form.substring(1, form.length() - 1);
+
+            // Check if the result is valid
+            if (IsForm("=" + newForm)) {
+                form = newForm; // Update form if valid
+            } else {
+                break; // Exit the loop if the new form is not valid
             }
         }
 

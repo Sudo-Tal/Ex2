@@ -80,13 +80,37 @@ public class CalcTests {
         sheet.set(2, 0, "A0+A1");  // Cell A2 = "A0 + A1"
 
         String result = sheet.eval(0, 0);
-        int[][] calc_d = sheet.depth();
-        if (calc_d[0][0] == -1) {
-            sheet.get(0,0).setType(Ex2Utils.ERR_CYCLE_FORM);
-        }
 
-        assertEquals(-1 ,calc_d);
         assertEquals("ERR_CYCLE!", result, "Expected the result to be cycle");
+    }
+
+    @Test
+    public void testDivisionByZero() {
+        //test a division by zero
+        sheet.set(0,0, "=5/0");
+        String result = sheet.eval(0,0);
+
+        assertEquals("Infinity",result, "Expected the result to be Infinity");
+
+    }
+
+    @Test
+    public void returnDouble() {
+    sheet.set(0,0, "5");
+    String result = sheet.eval(0,0);
+    assertEquals("5.0", result);
+    }
+
+
+    @Test
+    public void testMinusCell() {
+    //test a minus to a cell
+
+    sheet.set (0,0,"=25+30");
+    sheet.set (0,1 , "=-A0");
+    String result = sheet.eval(0,1);
+
+    assertEquals("-55.0", result, "Expected a Minus 25");
     }
 
     @Test
