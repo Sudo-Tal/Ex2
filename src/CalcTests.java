@@ -110,7 +110,7 @@ public class CalcTests {
     sheet.set (0,1 , "=-A0");
     String result = sheet.eval(0,1);
 
-    assertEquals("-55.0", result, "Expected a Minus 25");
+    assertEquals("-55.0", result, "Expected a Minus 55");
     }
 
     @Test
