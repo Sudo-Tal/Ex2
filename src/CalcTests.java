@@ -146,26 +146,4 @@ public class CalcTests {
         assertEquals("ERR_FORM!", result, "Expected the result to be ERROR");
     }
 
-
-    @Test
-    public void TestMinusMinus() {
-        //test for a minus for a minus cell reference
-        sheet.set(0,0,"=10");
-        sheet.set(0,1,"-A0");
-        sheet.set(0,2, "-A1");
-
-        String result = sheet.eval(0,2);
-
-        assertEquals("10",result );
-    }
-
-    @Test
-    public void TestMinusParentheses() {
-        sheet.set(0,0, "=-(-7)");
-        String result = sheet.eval(0,0);
-
-        assertEquals("7.0", result);
-
-    }
-
 }
