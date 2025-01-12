@@ -105,9 +105,7 @@ public class Ex2Sheet implements Sheet {
             for (int j = 0; j < height(); j++) {
                 // Get the current cell's depth order from the depth array (dd)
                 int order = dd[i][j];
-                if (order != -1) {  // Avoid adding cells with invalid order (e.g., cycle detected)
                     cellCoordinates.add(new int[]{i, j, order});
-                }
             }
         }
 
@@ -257,27 +255,34 @@ public class Ex2Sheet implements Sheet {
 
     @Override
     public void load(String fileName) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                // Split the line by commas (row, col, value)
-                String[] parts = line.split(",");
-                if (parts.length == 3) {
-                    try {
-                        // Parse row, col, and value
-                        int row = Integer.parseInt(parts[0]);
-                        int col = Integer.parseInt(parts[1]);
-                        String value = parts[2];
-
-                        // Update the corresponding cell with the loaded value
-                        this.set(row, col, value);
-                    } catch (NumberFormatException e) {
-                        System.err.println("Skipping invalid line: " + line);
-                    }
-                }
+        for (int i = 0; i < width(); i++) {
+            for (int j = 0; j < height(); j++) {
+                this.set(i, j, "");
             }
         }
-    }
+                try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        // Split the line by commas (row, col, value)
+                        String[] parts = line.split(",");
+                        if (parts.length == 3) {
+                            try {
+                                // Parse row, col, and value
+                                int row = Integer.parseInt(parts[0]);
+                                int col = Integer.parseInt(parts[1]);
+                                String value = parts[2];
+
+                                // Update the corresponding cell with the loaded value
+                                this.set(row, col, value);
+                            } catch (NumberFormatException e) {
+                                System.err.println("Skipping invalid line: " + line);
+                            }
+                        }
+                    }
+                }
+                eval();
+            }
+
 
     @Override
     public void save(String fileName) throws IOException {

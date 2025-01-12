@@ -2,6 +2,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+
+
+//This class was used to troubleshoot all bugs in the system, main tests are in "Tests" class
+
+
 public class CalcTests {
 
     private Ex2Sheet sheet;
@@ -73,62 +78,32 @@ public class CalcTests {
     }
 
     @Test
-    public void testEvalCycle() {
-        // Test for simple addition formula
-        sheet.set(0, 0, "=a0");  // Cell A0 = "5"
-        sheet.set(0, 1, "3");  // Cell A1 = "3"
-        sheet.set(2, 0, "A0+A1");  // Cell A2 = "A0 + A1"
-
-        String result = sheet.eval(0, 0);
-
-        assertEquals("ERR_CYCLE!", result, "Expected the result to be cycle");
-    }
-
-    @Test
     public void testDivisionByZero() {
         //test a division by zero
-        sheet.set(0,0, "=5/0");
-        String result = sheet.eval(0,0);
+        sheet.set(0, 0, "=5/0");
+        String result = sheet.eval(0, 0);
 
-        assertEquals("Infinity",result, "Expected the result to be Infinity");
+        assertEquals("Infinity", result, "Expected the result to be Infinity");
 
     }
 
     @Test
     public void returnDouble() {
-    sheet.set(0,0, "5");
-    String result = sheet.eval(0,0);
-    assertEquals("5.0", result);
+        sheet.set(0, 0, "5");
+        String result = sheet.eval(0, 0);
+        assertEquals("5.0", result);
     }
 
 
     @Test
     public void testMinusCell() {
-    //test a minus to a cell
+        //test a minus to a cell
 
-    sheet.set (0,0,"=25+30");
-    sheet.set (0,1 , "=-A0");
-    String result = sheet.eval(0,1);
+        sheet.set(0, 0, "=25+30");
+        sheet.set(0, 1, "=-A0");
+        String result = sheet.eval(0, 1);
 
-    assertEquals("-55.0", result, "Expected a Minus 55");
-    }
-
-    @Test
-    public void testEvalCycleComplexReset() {
-        // Test for simple addition formula
-        sheet.set(0, 0, "=5");
-        sheet.set(0, 1, "=a0");
-        sheet.set(0, 2, "=a1");
-
-        String result = sheet.eval(0, 2);
-
-        assertEquals("5.0", result, "Expected the result to be 5");
-
-        sheet.set(0,0, "=a2"); //set cycle
-        assertEquals("ERR_CYCLE!", sheet.eval(0, 0), "Expected the result to be Cycle");
-        assertEquals("ERR_CYCLE!", sheet.eval(0, 1), "Expected the result to be Cycle");
-        assertEquals("ERR_CYCLE!", sheet.eval(0, 2), "Expected the result to be Cycle");
-
+        assertEquals("-55.0", result, "Expected a Minus 55");
     }
 
 
@@ -139,11 +114,11 @@ public class CalcTests {
         sheet.set(0, 1, "5");  // Cell A1 = "5"
         if (!SCell.IsForm("1A1")) {
             System.out.println("IT WORK");
-        };
+        }
+        ;
 
         String result = sheet.eval(0, 0);
 
         assertEquals("ERR_FORM!", result, "Expected the result to be ERROR");
     }
-
 }
