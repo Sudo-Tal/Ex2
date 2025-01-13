@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 
 
 
-//This class was used to troubleshoot all bugs in the system, main tests are in "Tests" class
 
+//This class was used to troubleshoot bugs in the system, main tests are in the "Tests" class
 
 public class CalcTests {
 
