@@ -1,5 +1,3 @@
-// Add your documentation below:
-
 public class CellEntry implements Index2D {
     private final String cellString;
 
